@@ -3,6 +3,11 @@
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
 
+/**
+ * We will create gameplay tags here that could/will be used in C++ and BP
+ * We will also have other tags set up in the Project Settings in the editor, those will only be used in BP
+ * Splitting tags like this is a perfectly valid approach
+ */
 namespace CCTags
 {
 	namespace CCAbilities
