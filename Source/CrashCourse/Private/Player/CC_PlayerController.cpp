@@ -1,9 +1,13 @@
 // Copyright Leyodemus
 
 #include "CrashCourse/Public/Player/CC_PlayerController.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/Character.h"
+#include "GameplayTags/CCTags.h"
 
 void ACC_PlayerController::SetupInputComponent()
 {
@@ -27,7 +31,11 @@ void ACC_PlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 
 	// Ability actions
-	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Started, this, &ThisClass::Primary);
+	// Changed from Started to Triggered --> it will prevent being spammed because "Instancing Policy" on the ability's BP is set to "Instanced Per Actor"
+	EnhancedInputComponent->BindAction(PrimaryAction, ETriggerEvent::Triggered, this, &ThisClass::Primary); 
+	EnhancedInputComponent->BindAction(SecondaryAction, ETriggerEvent::Started, this, &ThisClass::Secondary);
+	EnhancedInputComponent->BindAction(TertiaryAction, ETriggerEvent::Started, this, &ThisClass::Tertiary);
+	
 }
 
 void ACC_PlayerController::Jump()
@@ -69,5 +77,23 @@ void ACC_PlayerController::Look(const FInputActionValue& Value)
 
 void ACC_PlayerController::Primary()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Primary Action Started"));
+	ActivateAbility(CCTags::CCAbilities::Primary);
+}
+
+void ACC_PlayerController::Secondary()
+{
+	ActivateAbility(CCTags::CCAbilities::Secondary);
+}
+
+void ACC_PlayerController::Tertiary()
+{
+	ActivateAbility(CCTags::CCAbilities::Tertiary);
+}
+
+void ACC_PlayerController::ActivateAbility(const FGameplayTag& AbilityTag) const
+{
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn()); //GetCharacter() would also work
+	if (!IsValid(ASC)) return;
+
+	ASC->TryActivateAbilitiesByTag(AbilityTag.GetSingleTagContainer());
 }
