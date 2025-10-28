@@ -32,7 +32,6 @@ void UCC_AbilitySystemComponent::SetAbilityLevel(TSubclassOf<UGameplayAbility> A
 		AbilitySpec->Level = Level;
 		MarkAbilitySpecDirty(*AbilitySpec); // This triggers replication, also to BP
 	}
-	
 }
 
 void UCC_AbilitySystemComponent::AddToAbilityLevel(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level)

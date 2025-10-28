@@ -8,6 +8,7 @@
 
 #include "CC_BaseCharacter.generated.h"
 
+struct FOnAttributeChangeData;
 class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
@@ -21,21 +22,34 @@ class CRASHCOURSE_API ACC_BaseCharacter : public ACharacter, public IAbilitySyst
 
 public:
 	ACC_BaseCharacter();
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual UAttributeSet* GetAttributeSet() const {return nullptr;}; // Will need overrides in the child classes
+	bool IsAlive() const {return bAlive;};
+	void SetAlive(bool bAliveStatus) { bAlive = bAliveStatus; };
 
 	UPROPERTY(BlueprintAssignable)
 	FASCInitialized OnASCInitialized; // Check ECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FASCInitialized, ...) up top of this class
 
+	UFUNCTION(BlueprintCallable, Category = "Crash|Death")
+	virtual void HandleRespawn();
+	
 protected:
 	void GiveStartupAbilities();
 	void InitializeAttributes() const;
 
+	void OnHealthChanged(const FOnAttributeChangeData& AttributeChangeData);
+	virtual void HandleDeath();
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Crash|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Crash|Effects")
 	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
+	bool bAlive = true;
 };
