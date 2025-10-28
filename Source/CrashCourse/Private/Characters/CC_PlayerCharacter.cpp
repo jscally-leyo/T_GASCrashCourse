@@ -47,6 +47,14 @@ UAbilitySystemComponent* ACC_PlayerCharacter::GetAbilitySystemComponent() const
 	return CCPlayerState->GetAbilitySystemComponent();
 }
 
+UAttributeSet* ACC_PlayerCharacter::GetAttributeSet() const
+{
+	ACC_PlayerState* CCPlayerState = Cast<ACC_PlayerState>(GetPlayerState());
+	if (!IsValid(CCPlayerState)) return nullptr;
+
+	return CCPlayerState->GetAttributeSet();
+}
+
 void ACC_PlayerCharacter::PossessedBy(AController* NewController)
 {
 	// This is good timing to set the ownership on the AbilitySystemComponent FOR THE SERVER
@@ -55,9 +63,13 @@ void ACC_PlayerCharacter::PossessedBy(AController* NewController)
 	if (!IsValid(GetAbilitySystemComponent()) || !HasAuthority()) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
-
+	// Explanation halfway through Lecture 34
+	OnASCInitialized.Broadcast(GetAbilitySystemComponent(), GetAttributeSet());
+	
 	// To actually give abilities to the character, we only need to do it on the server, it is automatically replicated by default
 	GiveStartupAbilities(); // --> declared in parent class as protected
+
+	InitializeAttributes();
 }
 
 void ACC_PlayerCharacter::OnRep_PlayerState()
@@ -68,6 +80,8 @@ void ACC_PlayerCharacter::OnRep_PlayerState()
 	if (!IsValid(GetAbilitySystemComponent())) return;
 	
 	GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	// Explanation halfway through Lecture 34
+	OnASCInitialized.Broadcast(GetAbilitySystemComponent(), GetAttributeSet());
 }
 
 

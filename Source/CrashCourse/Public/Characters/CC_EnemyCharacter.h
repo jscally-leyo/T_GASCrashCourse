@@ -7,6 +7,7 @@
 
 #include "CC_EnemyCharacter.generated.h"
 
+class UAttributeSet;
 class UAbilitySystemComponent;
 
 UCLASS()
@@ -18,6 +19,7 @@ public:
 	ACC_EnemyCharacter();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual UAttributeSet* GetAttributeSet() const override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,5 +28,7 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
+	
+	UPROPERTY()
+	TObjectPtr<UAttributeSet> AttributeSet;
 };
