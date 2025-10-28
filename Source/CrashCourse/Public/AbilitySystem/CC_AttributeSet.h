@@ -15,6 +15,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttributesInitialized);
+
 UCLASS()
 class CRASHCOURSE_API UCC_AttributeSet : public UAttributeSet
 {
@@ -22,6 +24,16 @@ class CRASHCOURSE_API UCC_AttributeSet : public UAttributeSet
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FAttributesInitialized OnAttributesInitialized;
+
+	UPROPERTY(ReplicatedUsing = OnRep_AttributesInitialized)
+	bool bAttributesInitialized = false;
+
+	UFUNCTION()
+	void OnRep_AttributesInitialized();
 	
 	// Check lecture 31 (Section 4 in general) for explanation, it's just how it has to be properly included in the GAS functionality
 	// HEALTH
