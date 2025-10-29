@@ -13,6 +13,8 @@ namespace CCTags
 
 	namespace Events // no CC-prefix because we already created this (sub)tag in the Unreal editor first
 	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(KillScored, "CCTags.Events.Enemy.KillScored","Tag for the KillScored event");
+		
 		namespace Enemy
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitReact, "CCTags.Events.Enemy.HitReact","Tag for the enemy HitReact event");

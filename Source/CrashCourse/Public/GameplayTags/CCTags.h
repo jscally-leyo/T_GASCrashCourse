@@ -21,9 +21,12 @@ namespace CCTags
 
 	namespace Events // no CC-prefix because we already created this (sub)tag in the Unreal editor first
 	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(KillScored);
+		
 		namespace Enemy
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitReact);
 		}
+		
 	}
 }

@@ -44,9 +44,18 @@ void ACC_BaseCharacter::InitializeAttributes() const
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get()); // Explanation in lecture 33 around 11:30
 }
 
+void ACC_BaseCharacter::ResetAttributes()
+{
+	checkf(IsValid(ResetAttributesEffect), TEXT("ResetAttributesEffect not set."));
+
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ResetAttributesEffect, 1.f, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get()); // Explanation in lecture 47
+}
+
 void ACC_BaseCharacter::OnHealthChanged(const FOnAttributeChangeData& AttributeChangeData)
 {
-	if (AttributeChangeData.NewValue <= 0.f)
+	if (bAlive && AttributeChangeData.NewValue <= 0.f)
 	{
 		HandleDeath();
 	}
@@ -55,7 +64,7 @@ void ACC_BaseCharacter::OnHealthChanged(const FOnAttributeChangeData& AttributeC
 void ACC_BaseCharacter::HandleDeath()
 {
 	bAlive = false;
-
+	
 	if (IsValid(GEngine))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,

@@ -35,10 +35,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Crash|Death")
 	virtual void HandleRespawn();
+
+	UFUNCTION(BlueprintCallable, Category = "Crash|Attributes")
+	void ResetAttributes();
 	
 protected:
 	void GiveStartupAbilities();
 	void InitializeAttributes() const;
+	
 
 	void OnHealthChanged(const FOnAttributeChangeData& AttributeChangeData);
 	virtual void HandleDeath();
@@ -50,6 +54,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Crash|Effects")
 	TSubclassOf<UGameplayEffect> InitializeAttributesEffect;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Crash|Effects")
+	TSubclassOf<UGameplayEffect> ResetAttributesEffect;
+	
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true), Replicated)
 	bool bAlive = true;
 };
