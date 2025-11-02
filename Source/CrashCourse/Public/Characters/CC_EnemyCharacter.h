@@ -21,8 +21,17 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual UAttributeSet* GetAttributeSet() const override;
 
+	// AI behaviour
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crash|AI")
+	float AcceptanceRadius = 500.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crash|AI")
+	float MinAttackDelay = 0.1f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Crash|AI")
+	float MaxAttackDelay = 0.5f;
+	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:

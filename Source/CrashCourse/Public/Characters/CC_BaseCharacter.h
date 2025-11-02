@@ -13,6 +13,12 @@ class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
 
+// For giving to the player character so enemies can search for this tag (this is not a Gameplay Tag!), see lecture 52
+namespace CrashTags
+{
+	extern CRASHCOURSE_API const FName Player;
+}
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FASCInitialized, UAbilitySystemComponent*, ASC, UAttributeSet*, AS); // Explanation halfway through Lecture 34
 
 UCLASS(Abstract) // Set to (Abstract) if you design the class to just be inherited from and not to be directly instantiated 
