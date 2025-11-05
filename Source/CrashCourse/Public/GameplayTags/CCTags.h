@@ -17,6 +17,11 @@ namespace CCTags
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Primary);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Secondary);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Tertiary);
+
+		namespace Enemy
+		{
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attack);
+		}
 	}
 
 	namespace Events // no CC-prefix because we already created this (sub)tag in the Unreal editor first
@@ -26,6 +31,7 @@ namespace CCTags
 		namespace Enemy
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitReact);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(EndAttack);
 		}
 		
 	}
