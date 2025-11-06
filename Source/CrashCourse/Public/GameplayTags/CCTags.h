@@ -10,6 +10,12 @@
  */
 namespace CCTags
 {
+	namespace SetByCaller
+	{
+		// Explanation in Lecture 59
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Projectile);
+	}
+	
 	namespace CCAbilities
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ActivateOnGiven);
@@ -27,11 +33,18 @@ namespace CCTags
 	namespace Events // no CC-prefix because we already created this (sub)tag in the Unreal editor first
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(KillScored);
+
+		namespace Player
+		{
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitReact);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Death);
+		}
 		
 		namespace Enemy
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(HitReact);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(EndAttack);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(MeleeTraceHit);
 		}
 		
 	}

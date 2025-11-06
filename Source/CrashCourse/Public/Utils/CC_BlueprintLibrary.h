@@ -7,6 +7,10 @@
 
 #include "CC_BlueprintLibrary.generated.h"
 
+class UGameplayEffect;
+struct FGameplayEventData;
+struct FGameplayTag;
+
 UENUM(BlueprintType)
 enum class EHitDirection : uint8
 {
@@ -45,5 +49,8 @@ public:
 		const UObject* WorldContextObject,
 		const FVector& Origin,
 		const FName& Tag);
-	
+
+	UFUNCTION(BlueprintCallable)
+	static void SendDamageEventToPlayer(AActor* Target, const TSubclassOf<UGameplayEffect>& DamageEffect,
+		const FGameplayEventData& Payload, const FGameplayTag& DataTag, float Damage);
 };

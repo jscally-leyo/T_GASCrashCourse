@@ -2,9 +2,12 @@
 
 #include "GameObjects/CC_Projectile.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Characters/CC_PlayerCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameplayTags/CCTags.h"
+#include "Utils/CC_BlueprintLibrary.h"
 
 ACC_Projectile::ACC_Projectile()
 {
@@ -25,12 +28,24 @@ void ACC_Projectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	UAbilitySystemComponent* AbilitySystemComponent = PlayerCharacter->GetAbilitySystemComponent();
 	if (!IsValid(AbilitySystemComponent) || !HasAuthority()) return;
 
+	// Added in lecture 63 >>>
+	FGameplayEventData Payload;
+	Payload.Instigator = GetOwner();
+	Payload.Target = PlayerCharacter;
+	
+	UCC_BlueprintLibrary::SendDamageEventToPlayer(PlayerCharacter, DamageEffect, Payload, CCTags::SetByCaller::Projectile, Damage);
+	
+	/*
 	FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
 	FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DamageEffect, 1.f, ContextHandle);
 
-	// TODO: use the damage variable for the amount of damage to cause
-	
+	// Explanation in Lecture 59
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, CCTags::SetByCaller::Projectile, Damage);
+
 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	*/
+	
+	// Added in lecture 63 <<<
 	
 	SpawnImpactEffects(); // By doing this here, this will only happen when player is hit. Can be moved to top of this function to make it a generic hit impact effect.
 	
