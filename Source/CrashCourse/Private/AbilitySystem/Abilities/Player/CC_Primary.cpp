@@ -3,9 +3,9 @@
 #include "AbilitySystem/Abilities/Player/CC_Primary.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Engine/OverlapResult.h"
 #include "GameplayTags/CCTags.h"
 
+/* MOVED TO STATIC FUNCTION IN CC_BLUEPRINTLIBRARY
 TArray<AActor*> UCC_Primary::HitBoxOverlapTest()
 {
 	// We are calling this from the BP
@@ -47,6 +47,7 @@ TArray<AActor*> UCC_Primary::HitBoxOverlapTest()
 
 	return ActorsHit;
 }
+*/
 
 void UCC_Primary::SendHitReactEventToActors(const TArray<AActor*> ActorsHit)
 {
@@ -59,7 +60,7 @@ void UCC_Primary::SendHitReactEventToActors(const TArray<AActor*> ActorsHit)
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, CCTags::Events::Enemy::HitReact, Payload);
 	}
 }
-
+/* MOVED TO STATIC FUNCTION IN CC_BLUEPRINTLIBRARY
 void UCC_Primary::DrawHitBoxOverlapDebugs(const TArray<FOverlapResult>& OverlapResults,
                                           const FVector& HitBoxLocation) const
 {
@@ -75,3 +76,4 @@ void UCC_Primary::DrawHitBoxOverlapDebugs(const TArray<FOverlapResult>& OverlapR
 		}
 	}
 }
+*/
