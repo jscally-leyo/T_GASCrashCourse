@@ -17,7 +17,7 @@ class CRASHCOURSE_API ACC_EnemyCharacter : public ACC_BaseCharacter
 
 public:
 	ACC_EnemyCharacter();
-
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual UAttributeSet* GetAttributeSet() const override;
 
@@ -33,12 +33,21 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	float GetTimelineLength();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	bool bIsBeingLaunched = false;
+
+	void StopMovementUntilLanded();
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void HandleDeath() override;
 
 private:
+
+	UFUNCTION()
+	void EnableMovementOnLanded(const FHitResult& Hit);
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	

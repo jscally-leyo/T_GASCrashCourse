@@ -62,13 +62,19 @@ void UCC_SearchForTarget::StartSearch()
 
 void UCC_SearchForTarget::EndAttackEventReceived(FGameplayEventData Payload)
 {
-	StartSearch();
+	if (OwningEnemy.IsValid() && !OwningEnemy->bIsBeingLaunched)
+	{
+		StartSearch();
+	}
 }
 
 void UCC_SearchForTarget::Search()
-{
+{if
+	(!OwningEnemy.IsValid()) return;
 	const FVector SearchOrigin = GetAvatarActorFromActorInfo()->GetActorLocation();
-	FClosestActorWithTagResult ClosestActorResult = UCC_BlueprintLibrary::FindClosestActorWithTag(this, SearchOrigin, CrashTags::Player);
+	
+	FClosestActorWithTagResult ClosestActorResult = UCC_BlueprintLibrary::FindClosestActorWithTag(GetAvatarActorFromActorInfo(),
+		SearchOrigin,CrashTags::Player, OwningEnemy->SearchRange);
 
 	TargetBaseCharacter = Cast<ACC_BaseCharacter>(ClosestActorResult.Actor);
 	if (!TargetBaseCharacter.IsValid())

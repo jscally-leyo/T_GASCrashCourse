@@ -83,8 +83,10 @@ void UCC_WidgetComponent::BindWidgetToAttributeChanges(UWidget* WidgetObject,
 	if (!IsValid(AttributeWidget)) return; // We only care about CC Attribute Widgets
 	if (!AttributeWidget->MatchesAttributes(Pair)) return; // Only subscribe for matching Attributes
 
+	AttributeWidget->AvatarActor = CrashCharacter;
+
 	// For initial values
-	AttributeWidget->OnAttributeChange(Pair, AttributeSet.Get()); 
+	AttributeWidget->OnAttributeChange(Pair, AttributeSet.Get(), 0.f); 
 
 	// Built in GAS: AbilitySystemComponent will broadcast a delegate whenever an attribute changes during the game,
 	// so we can listen for that. This is a lambda function (see Lecture 36 halfway through)
@@ -94,7 +96,7 @@ void UCC_WidgetComponent::BindWidgetToAttributeChanges(UWidget* WidgetObject,
 		[this, AttributeWidget, &Pair]
 		(const FOnAttributeChangeData& AttributeChangeData)
 		{
-			AttributeWidget->OnAttributeChange(Pair, AttributeSet.Get());
+			AttributeWidget->OnAttributeChange(Pair, AttributeSet.Get(), AttributeChangeData.OldValue);
 		});
 
 	// For changes during the game for the Value, e.g. MaxHealth, MaxMana
@@ -102,6 +104,6 @@ void UCC_WidgetComponent::BindWidgetToAttributeChanges(UWidget* WidgetObject,
 		[this, AttributeWidget, &Pair]
 		(const FOnAttributeChangeData& AttributeChangeData)
 		{
-			AttributeWidget->OnAttributeChange(Pair, AttributeSet.Get());
+			AttributeWidget->OnAttributeChange(Pair, AttributeSet.Get(), AttributeChangeData.OldValue);
 		});
 }

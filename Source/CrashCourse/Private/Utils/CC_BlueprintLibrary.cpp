@@ -7,6 +7,7 @@
 #include "AbilitySystem/CC_AttributeSet.h"
 #include "AbilitySystem/AbilityTasks/CC_WaitGameplayEvent.h"
 #include "Characters/CC_BaseCharacter.h"
+#include "Characters/CC_EnemyCharacter.h"
 #include "Engine/OverlapResult.h"
 #include "GameplayTags/CCTags.h"
 #include "Kismet/GameplayStatics.h"
@@ -46,8 +47,8 @@ FName UCC_BlueprintLibrary::GetHitDirectionName(const EHitDirection& HitDirectio
 	}
 }
 
-FClosestActorWithTagResult UCC_BlueprintLibrary::FindClosestActorWithTag(const UObject* WorldContextObject,
-	const FVector& Origin, const FName& Tag)
+FClosestActorWithTagResult UCC_BlueprintLibrary::FindClosestActorWithTag(UObject* WorldContextObject,
+	const FVector& Origin, const FName& Tag, float SearchRange)
 {
 	TArray<AActor*> ActorsWithTag;
 	UGameplayStatics::GetAllActorsWithTag(WorldContextObject, Tag, ActorsWithTag);
@@ -64,6 +65,16 @@ FClosestActorWithTagResult UCC_BlueprintLibrary::FindClosestActorWithTag(const U
 
 		// Check if actor is closer than the previously closest actor
 		const float Distance = FVector::Dist(Origin, Actor->GetActorLocation());
+		ACC_BaseCharacter* SearchingCharacter = Cast<ACC_BaseCharacter>(WorldContextObject);
+		if (!IsValid(SearchingCharacter))
+		{
+			continue;
+		}
+		else
+		{
+			if (Distance > SearchingCharacter->SearchRange) continue;
+		}
+		
 		if (Distance < ClosestDistance)
 		{
 			ClosestDistance = Distance;
@@ -79,17 +90,25 @@ FClosestActorWithTagResult UCC_BlueprintLibrary::FindClosestActorWithTag(const U
 }
 
 void UCC_BlueprintLibrary::SendDamageEventToPlayer(AActor* Target, const TSubclassOf<UGameplayEffect>& DamageEffect,
-	FGameplayEventData& Payload, const FGameplayTag& DataTag, float Damage, UObject* OptionalParticleSystem)
+	FGameplayEventData& Payload, const FGameplayTag& DataTag, float Damage, const FGameplayTag& EventTagOverride, UObject* OptionalParticleSystem)
 {
 	ACC_BaseCharacter* PlayerCharacter = Cast<ACC_BaseCharacter>(Target);
 	if (!IsValid(PlayerCharacter) || !PlayerCharacter->IsAlive()) return;
 
-	UCC_AttributeSet* AttributeSet = Cast<UCC_AttributeSet>(PlayerCharacter->GetAttributeSet());
-	if (!IsValid(AttributeSet)) return;
+	FGameplayTag EventTag;
+	if (!EventTagOverride.MatchesTagExact(CCTags::None))
+	{
+		EventTag = EventTagOverride;
+	}
+	else
+	{
+		UCC_AttributeSet* AttributeSet = Cast<UCC_AttributeSet>(PlayerCharacter->GetAttributeSet());
+		if (!IsValid(AttributeSet)) return;
 
-	const bool bLethal = AttributeSet->GetHealth() - Damage <= 0.f;
-	const FGameplayTag EventTag = bLethal ? CCTags::Events::Player::Death : CCTags::Events::Player::HitReact;
-
+		const bool bLethal = AttributeSet->GetHealth() - Damage <= 0.f;
+		EventTag = bLethal ? CCTags::Events::Player::Death : CCTags::Events::Player::HitReact;
+	}
+	
 	Payload.OptionalObject = OptionalParticleSystem;
 	
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(PlayerCharacter, EventTag, Payload);
@@ -103,6 +122,16 @@ void UCC_BlueprintLibrary::SendDamageEventToPlayer(AActor* Target, const TSubcla
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DataTag, -Damage);
 
 	TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
+void UCC_BlueprintLibrary::SendDamageEventToPlayers(TArray<AActor*> Targets,
+	const TSubclassOf<UGameplayEffect>& DamageEffect, FGameplayEventData& Payload, const FGameplayTag& DataTag,
+	float Damage, const FGameplayTag& EventTagOverride, UObject* OptionalParticleSystem)
+{
+	for (AActor* Target : Targets)
+	{
+		SendDamageEventToPlayer(Target, DamageEffect, Payload, DataTag, Damage, EventTagOverride, OptionalParticleSystem);
+	}
 }
 
 TArray<AActor*> UCC_BlueprintLibrary::HitBoxOverlapTest(AActor* AvatarActor, float HitBoxRadius, float HitBoxForwardOffset, float HitBoxElevationOffset, bool bDrawDebugs)
@@ -215,7 +244,13 @@ TArray<AActor*> UCC_BlueprintLibrary::ApplyKnockback(AActor* AvatarActor, const 
 			DrawDebugDirectionalArrow(World, HitCharacterLocation,
 				HitCharacterLocation + KnockbackForce, 100.f, FColor::Green, false, 3.f);
 		}
-
+		
+		ACC_EnemyCharacter* EnemyCharacter = Cast<ACC_EnemyCharacter>(HitCharacter);
+		if (IsValid(EnemyCharacter))
+		{
+			EnemyCharacter->StopMovementUntilLanded();
+		}
+		
 		HitCharacter->LaunchCharacter(KnockbackForce, true, true);
 	}
 

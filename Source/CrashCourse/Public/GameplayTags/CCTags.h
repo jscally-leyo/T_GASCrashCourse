@@ -10,6 +10,8 @@
  */
 namespace CCTags
 {
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+	
 	namespace SetByCaller
 	{
 		// Explanation in Lecture 59
